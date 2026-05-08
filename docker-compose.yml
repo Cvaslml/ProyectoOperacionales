@@ -1,0 +1,14 @@
+version: "3.9"  # Versión del formato de docker-compose
+
+services:  # Define los contenedores que se van a levantar
+  filesystem:  # Nombre de nuestro contenedor
+    build:
+      context: .  # El punto de partida para construir la imagen es la raíz del proyecto
+      dockerfile: docker/Dockerfile  # Ubicación del Dockerfile con la receta
+    volumes:
+      # Conecta la carpeta local ./volumes/data con /data dentro del contenedor
+      # Todo lo que se cree o borre en /data adentro, se refleja aquí afuera
+      # Eso garantiza la PERSISTENCIA: si el contenedor se apaga, los archivos siguen
+      - ./volumes/data:/data
+    stdin_open: true  # Mantiene abierta la entrada estándar (para escribir comandos)
+    tty: true  # Simula una terminal real dentro del contenedor (necesario para la CLI)
