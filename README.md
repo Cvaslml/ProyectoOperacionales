@@ -112,3 +112,6 @@ Los tres conceptos de Sistemas Operacionales que demostramos:
 Gestión de archivos → todos los comandos del CLI
 Persistencia de datos → volumen volumes/data
 Aislamiento de procesos → el contenedor Docker
+
+<img width="560" height="429" alt="image" src="https://github.com/user-attachments/assets/8ef174c4-0d5a-4295-9763-2f33419ea432" />
+
