@@ -12,10 +12,13 @@ Cada contenedor representa un entorno aislado que interactúa con un sistema de 
 
 ### 🎯 Objetivo del proyecto
 Simular el funcionamiento básico de un sistema de archivos, permitiendo realizar operaciones como creación, lectura, escritura y eliminación de archivos, y analizar su persistencia y aislamiento utilizando Docker.
+
 ---
 
 ### 🧱 Estructura del proyecto
 La estructura base del proyecto es la siguiente:
+
+```text
 ProyectoOperacionales/
 │
 ├── app/ # Código de la aplicación (Python / C++ / Java)
@@ -30,8 +33,9 @@ ProyectoOperacionales/
 ├── docker-compose.yml # Orquestación de contenedores
 ├── README.md # Documentación del proyecto
 └── .gitignore
+```
 
-### 1. ▶️ Clonar el repositorio
+### ▶️ Clonar el repositorio
 ```terminal bash
 git clone https://github.com/alalo10/ProyectoOperacionales.git
 cd ProyectoOperacionales
@@ -42,86 +46,49 @@ Un Dockerfile es un archivo de texto que contiene las instrucciones para constru
 
 Dicho de forma sencilla:
 
-📦 Dockerfile = receta
-🧁 Imagen Docker = torta ya horneada
-▶️ Contenedor = torta servida y en uso
+* Dockerfile = receta
+* Imagen Docker = torta ya horneada
+* Contenedor = torta servida y en uso
 
 ## ¿Qué vamos a hacer realmente?
-📁 Sistema de archivos simulado con Docker
-pensado para Sistemas Operacionales, no para hacer un Windows 2.0.
+Sistema de archivos simulado con Docker pensado para Sistemas Operacionales, no para hacer un Windows 2.0. Haremoa una interfaz por consola (CLI) Tal como:
+* ls
+* cd
+* mkdir
+* touch
+Esto es exactamente cómo funcionan los SO por debajo.
 
-1️⃣ ¿Interfaz, funcionalidad o ambos?
-👉 Ambos, pero minimalistas.
+2️⃣ ¿Qué es “un archivo” En nuestro sistema, un archivo es una clave conceptual, no importa el tipo de archivo... Para el sistema operativo:
+* .txt
+* .pdf
+* .xlsx
+* .docx
+Todos son solo archivos con bytes, así que NO los vamos a interpretar, solo:
+* crear
+* borrar
+* mover
+* listar
+* leer texto (solo si es .txt)
 
-❌ Lo que NO vamos a hacer
-Interfaz gráfica (GUI)
-Ventanas, botones, explorador visual
-Leer PDFs, Word, Excel “por dentro”
-Eso no es objetivo de Sistemas Operacionales y complica demasiado.
-
-✅ Lo que SÍ vamos a hacer
-🖥️ Interfaz por consola (CLI)
-Tal como:
-ls
-cd
-mkdir
-touch
-📌 Esto es exactamente cómo funcionan los SO por debajo.
-
-2️⃣ ¿Qué es “un archivo” en nuestro sistema?
-Clave conceptual 👇
-
-👉 No importa el tipo del archivo
-Para el sistema operativo:
-.txt
-.pdf
-.xlsx
-.docx
-
-👉 Todos son solo archivos con bytes
-📌 Así que NO los vamos a interpretar, solo:
-crear
-borrar
-mover
-listar
-leer texto (solo si es .txt)
-Eso es 100% coherente con SO.
-
-3️⃣ ¿Qué funcionalidades DEBE tener el sistema?
-Vamos a definir un MVP académico (mínimo viable pero sólido).
+3️⃣ Paras las funcionalidades que tendrá el sistema, se definirá un MVP académico (mínimo viable pero sólido).
 
 📁 Gestión de directorios
-Crear directorios
-Listar contenido
-Navegar entre carpetas
-Eliminar directorios vacíos
+* Crear directorios
+* Listar contenido
+* Navegar entre carpetas
+* Eliminar directorios vacíos
 Comandos simulados:
-mkdir docs
-cd docs
-ls
-rmdir docs
+* mkdir docs
+* cd docs
+* ls
+* rmdir docs
 
 📄 Gestión de archivos
-Crear archivos vacíos
-Eliminar archivos
-Mover archivos
-Renombrar archivos
-Mostrar contenido solo de .txt
-
-Ejemplos:
-touch notas.txt
-rm notas.txt
-mv notas.txt backup.txt
-cat notas.txt
-
-🔐 Metadatos (muy importante para SO)
-Cada archivo tendrá:
-Nombre
-Tamaño
-Tipo
-Fecha de creación
-Fecha de modificación
-📌 Esto se puede simular con estructuras en memoria
+* Crear archivos vacíos
+* Eliminar archivos
+* Mover archivos
+* Renombrar archivos
+* Mostrar contenido solo de .txt
 
 ### ¿Qué rol juega Docker aquí?
 Docker garantiza que: Todos usan el mismo entorno, No importa Windows / Linux / Mac, El sistema funciona igual en cualquier PC
