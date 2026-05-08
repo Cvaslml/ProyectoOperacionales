@@ -90,7 +90,25 @@ Comandos simulados:
 * Renombrar archivos
 * Mostrar contenido solo de .txt
 
+---
+
 ### ¿Qué rol juega Docker aquí?
 Docker garantiza que: Todos usan el mismo entorno, No importa Windows / Linux / Mac, El sistema funciona igual en cualquier PC
 
 📦 El contenedor será: “Un sistema Linux que ejecuta un gestor de archivos simulado por consola” -> Eso es texto de informe nivel SO.
+
+---
+Lo que logramos:
+
+Un sistema de archivos simulado corriendo dentro de un contenedor Docker
+Comandos funcionales: ls, mkdir, rmdir, cd, touch, rm, mv, read, edit
+Un editor de texto por líneas con opciones de agregar, reemplazar y borrar
+Persistencia de datos mediante volúmenes Docker — los archivos sobreviven aunque el contenedor se apague
+Aislamiento de procesos — todo corre dentro del contenedor sin afectar tu máquina
+Código subido a GitHub correctamente
+
+Los tres conceptos de Sistemas Operacionales que demostramos:
+
+Gestión de archivos → todos los comandos del CLI
+Persistencia de datos → volumen volumes/data
+Aislamiento de procesos → el contenedor Docker
