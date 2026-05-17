@@ -1,117 +1,200 @@
-# Proyecto Sistemas Operacionales  
-## Simulación de un Sistema de Archivos usando Docker
+# 🐳 Proyecto Docker — Entornos Multi-Contenedor con Docker Compose
 
-### 📌 Descripción general
-Este proyecto consiste en la simulación de un sistema de archivos utilizando contenedores Docker.  
-El objetivo es comprender, de forma práctica, conceptos fundamentales de los Sistemas Operacionales como:
-- gestión de archivos
-- persistencia de datos
-- aislamiento de procesos
-Cada contenedor representa un entorno aislado que interactúa con un sistema de archivos simulado mediante volúmenes de Docker.
----
+Este proyecto demuestra el uso de **Docker y Docker Compose** para construir, desplegar y administrar un entorno multi-contenedor reproducible. Se levantan **tres contenedores en un mismo equipo**, coordinados por un archivo `docker-compose.yml`, que juntos implementan un simulador de sistema de archivos accesible desde el navegador.
 
-### 🎯 Objetivo del proyecto
-Simular el funcionamiento básico de un sistema de archivos, permitiendo realizar operaciones como creación, lectura, escritura y eliminación de archivos, y analizar su persistencia y aislamiento utilizando Docker.
+**Repositorio:** [github.com/alalo10/ProyectoOperacionales](https://github.com/alalo10/ProyectoOperacionales)
 
 ---
 
-### 🧱 Estructura del proyecto
-La estructura base del proyecto es la siguiente:
+## Objetivos cumplidos
 
+| Requisito del laboratorio | Implementación |
+|---|---|
+| Instalar y configurar Docker en Linux | Docker Engine en Ubuntu |
+| Construir y ejecutar tres contenedores | `node-web`, `filesystem-cli`, `mongodb` |
+| Desplegar una app web con Node.js | Express en el contenedor `node-web`, puerto 3000 |
+| Verificar funcionamiento de cada contenedor | `docker compose ps` + health checks |
+| Definir servicios en `docker-compose.yml` | Archivo único orquesta los 3 servicios |
+| Levantar, detener y escalar servicios | `up`, `stop`, `down`, `--scale` |
+| Gestionar variables de entorno y volúmenes | Archivo `.env` + volúmenes nombrados |
+
+---
+
+## 🏗️ Arquitectura del sistema
+```text
+┌─────────────────────────────────────────────────────────┐
+│              Docker Compose — app-network               │
+│                                                         │
+│  ┌─────────────┐   ┌─────────────┐  ┌──────────────┐    │
+│  │  node-web   │──▶│filesystem   │  │   mongodb    │    │
+│  │  Node.js    │   │  -cli       │  │  MongoDB 7   │    │
+│  │  :3000      │   │  Python CLI │  │  :27017      │    │
+│  └──────┬──────┘   └──────┬──────┘  └──────┬───────┘    │
+│         │                 │                 │           │
+│   shared_data (volumen)◄──┘         mongo_data          │
+└─────────────────────────────────────────────────────────┘
+▲
+Usuario → http://localhost:3000
+```
+---
+
+## Estructura del proyecto
 ```text
 ProyectoOperacionales/
 │
-├── app/ # Código de la aplicación (Python / C++ / Java)
-│ └── main.py
+├── app/                    # Contenedor 1 — Node.js + Express
+│   ├── Dockerfile
+│   ├── package.json
+│   └── index.js
 │
-├── docker/ # Configuración de Docker
-│ └── Dockerfile
+├── filesystem/             # Contenedor 2 — Python CLI
+│   ├── Dockerfile
+│   └── main.py
 │
 ├── volumes/
-│ └── data/ # Sistema de archivos simulado (volumen)
+│   └── data/              # Sistema de archivos simulado (volumen compartido)
 │
-├── docker-compose.yml # Orquestación de contenedores
-├── README.md # Documentación del proyecto
-└── .gitignore
+├── docker-compose.yml     # Orquestación de los 3 servicios
+├── .env                   # Variables de entorno
+├── .gitignore
+└── README.md
+
 ```
 
-### ▶️ Clonar el repositorio
-```terminal bash
+---
+
+## Requisitos previos
+
+- Sistema operativo: **Linux** (Ubuntu 20.04+)
+- Docker Engine instalado (`docker --version`)
+- Docker Compose v2 (`docker compose version`)
+
+---
+
+## Despliegue paso a paso
+
+### 1. Clonar el repositorio
+
+```bash
 git clone https://github.com/alalo10/ProyectoOperacionales.git
 cd ProyectoOperacionales
 ```
 
-### ¿Qué es un Dockerfile?
-Un Dockerfile es un archivo de texto que contiene las instrucciones para construir una imagen Docker, después de creados los programa se le dan las intrucciones al Dockerfile que ese sera el programa que va a contener, los contenedores docker corren en linux, es posible que corran con windows pero eso los vuelve más pesados y complejos por eso se usa la tecnologia WSL que es propia de docker y lo que permite es darle un piso con kernel de linux para crear las paredes del contenedor y este se pueda correr en toda máquina, los que hace WSL es conectar con el kernel de la maquia y ejecutar el kernel de linux
+### 2. Construir y levantar los tres contenedores
 
-Dicho de forma sencilla:
+```bash
+docker compose up --build -d
+```
 
-* Dockerfile = receta
-* Imagen Docker = torta ya horneada
-* Contenedor = torta servida y en uso
+### 3. Verificar que los tres contenedores están activos
 
-## ¿Qué vamos a hacer realmente?
-Sistema de archivos simulado con Docker pensado para Sistemas Operacionales, no para hacer un Windows 2.0. Haremoa una interfaz por consola (CLI) Tal como:
-* ls
-* cd
-* mkdir
-* touch
-Esto es exactamente cómo funcionan los SO por debajo.
+```bash
+docker compose ps
+```
 
-2️⃣ ¿Qué es “un archivo” En nuestro sistema, un archivo es una clave conceptual, no importa el tipo de archivo... Para el sistema operativo:
-* .txt
-* .pdf
-* .xlsx
-* .docx
-Todos son solo archivos con bytes, así que NO los vamos a interpretar, solo:
-* crear
-* borrar
-* mover
-* listar
-* leer texto (solo si es .txt)
+Salida esperada:
+NAME             IMAGE              STATUS          PORTS
+node-web         app-node-web       Up (healthy)    0.0.0.0:3000->3000/tcp
+filesystem-cli   app-filesystem     Up
+mongodb          mongo:7            Up              27017/tcp
+### 4. Acceder a la aplicación web
 
-3️⃣ Paras las funcionalidades que tendrá el sistema, se definirá un MVP académico (mínimo viable pero sólido).
-
-📁 Gestión de directorios
-* Crear directorios
-* Listar contenido
-* Navegar entre carpetas
-* Eliminar directorios vacíos
-Comandos simulados:
-* mkdir docs
-* cd docs
-* ls
-* rmdir docs
-
-📄 Gestión de archivos
-* Crear archivos vacíos
-* Eliminar archivos
-* Mover archivos
-* Renombrar archivos
-* Mostrar contenido solo de .txt
+Abrir en el navegador: **http://localhost:3000**
 
 ---
 
-### ¿Qué rol juega Docker aquí?
-Docker garantiza que: Todos usan el mismo entorno, No importa Windows / Linux / Mac, El sistema funciona igual en cualquier PC
+## Administración del ciclo de vida con Docker Compose
 
-📦 El contenedor será: “Un sistema Linux que ejecuta un gestor de archivos simulado por consola” -> Eso es texto de informe nivel SO.
+```bash
+# Levantar todos los servicios en segundo plano
+docker compose up -d
+
+# Ver estado de los servicios
+docker compose ps
+
+# Ver logs en tiempo real
+docker compose logs -f
+
+# Ver logs de un servicio específico
+docker compose logs -f node-web
+
+# Detener los servicios (sin borrar contenedores)
+docker compose stop
+
+# Detener y eliminar contenedores
+docker compose down
+
+# Detener y eliminar contenedores + volúmenes
+docker compose down -v
+
+# Escalar el servicio CLI a 3 instancias
+docker compose up --scale filesystem-cli=3 -d
+
+# Reiniciar un servicio específico
+docker compose restart node-web
+
+# Entrar a un contenedor en ejecución
+docker exec -it node-web bash
+docker exec -it filesystem-cli bash
+```
 
 ---
-Lo que logramos:
 
-Un sistema de archivos simulado corriendo dentro de un contenedor Docker
-Comandos funcionales: ls, mkdir, rmdir, cd, touch, rm, mv, read, edit
-Un editor de texto por líneas con opciones de agregar, reemplazar y borrar
-Persistencia de datos mediante volúmenes Docker — los archivos sobreviven aunque el contenedor se apague
-Aislamiento de procesos — todo corre dentro del contenedor sin afectar tu máquina
-Código subido a GitHub correctamente
+## Gestión de variables de entorno
 
-Los tres conceptos de Sistemas Operacionales que demostramos:
+Archivo `.env` en la raíz del proyecto:
 
-Gestión de archivos → todos los comandos del CLI
-Persistencia de datos → volumen volumes/data
-Aislamiento de procesos → el contenedor Docker
+```env
+MONGO_URI=mongodb://mongodb:27017/filesystemdb
+NODE_ENV=production
+PORT=3000
+```
 
-<img width="560" height="429" alt="image" src="https://github.com/user-attachments/assets/8ef174c4-0d5a-4295-9763-2f33419ea432" />
+Docker Compose los inyecta automáticamente en cada servicio que los declara con `env_file: .env`.
 
+---
+
+## Gestión de volúmenes
+
+El proyecto define dos volúmenes nombrados en `docker-compose.yml`:
+
+```yaml
+volumes:
+  shared_data:    # Compartido entre node-web y filesystem-cli
+  mongo_data:     # Exclusivo de MongoDB — persiste la base de datos
+```
+
+Los datos **sobreviven** a reinicios y paradas de contenedores. Solo se eliminan con `docker compose down -v`.
+
+---
+
+## Descripción de los tres contenedores
+
+### Contenedor 1 — `node-web`
+- **Imagen base:** `node:18-alpine`
+- **Dockerfile:** `app/Dockerfile`
+- **Puerto:** `3000` (expuesto al host)
+- **Función:** Servidor web Express que expone una API REST para operar sobre el sistema de archivos simulado. Se conecta a MongoDB para registrar operaciones.
+
+### Contenedor 2 — `filesystem-cli`
+- **Imagen base:** `python:3.11-slim`
+- **Dockerfile:** `filesystem/Dockerfile`
+- **Función:** Interfaz de línea de comandos que simula operaciones de un sistema de archivos real sobre el volumen compartido (`ls`, `mkdir`, `touch`, `rm`, `mv`, `read`).
+
+### Contenedor 3 — `mongodb`
+- **Imagen:** `mongo:7` (imagen oficial de Docker Hub, sin Dockerfile personalizado)
+- **Puerto interno:** `27017`
+- **Función:** Base de datos que persiste el registro de operaciones realizadas. No se expone al host por seguridad.
+
+---
+
+## Conceptos Docker demostrados
+
+- **Imágenes personalizadas** construidas desde `Dockerfile` (contenedores 1 y 2)
+- **Imagen oficial** de Docker Hub sin modificación (contenedor 3)
+- **Red interna** `app-network` — los contenedores se comunican por nombre de servicio
+- **Volúmenes nombrados** — persistencia de datos independiente del ciclo de vida del contenedor
+- **Variables de entorno** — configuración externalizada en `.env`
+- **Health checks** — Docker verifica que los servicios estén listos antes de marcarlos como `Up`
+- **Escalado** — `--scale` levanta múltiples instancias del mismo servicio
+- **Orquestación completa** — un solo comando (`docker compose up`) levanta todo el entorno
