@@ -1,14 +1,70 @@
-version: "3.9"  # Versión del formato de docker-compose
+# docker-compose.yml — Orquesta los 3 contenedores del proyecto
+# Para levantar todo: docker compose up --build -d
+# Para detener todo: docker compose down
 
-services:  # Define los contenedores que se van a levantar
-  filesystem:  # Nombre de nuestro contenedor
+services: # Define cada contenedor como un "servicio"
+
+  node-web: # Servicio 1: aplicación web con Node.js (requerimiento del laboratorio)
     build:
-      context: .  # El punto de partida para construir la imagen es la raíz del proyecto
-      dockerfile: docker/Dockerfile  # Ubicación del Dockerfile con la receta
+      context: ./app # Carpeta donde está el Dockerfile de Node.js
+      dockerfile: Dockerfile # Nombre del archivo con las instrucciones de construcción
+    container_name: node-web # Nombre fijo del contenedor (visible en docker ps)
+    ports:
+      - "3000:3000" # Expone el puerto 3000 del contenedor al puerto 3000 del host
+                    # Formato: "puerto_host:puerto_contenedor"
+                    # Sin esto, la app no sería accesible desde el navegador
+    environment:
+      - PORT=3000 # Variable de entorno que lee index.js para saber en qué puerto escuchar
+      - MONGO_URI=mongodb://mongodb:27017/filesystemdb # URL de conexión a MongoDB
+                  # "mongodb" es el nombre del servicio — Docker lo resuelve como hostname
     volumes:
-      # Conecta la carpeta local ./volumes/data con /data dentro del contenedor
-      # Todo lo que se cree o borre en /data adentro, se refleja aquí afuera
-      # Eso garantiza la PERSISTENCIA: si el contenedor se apaga, los archivos siguen
-      - ./volumes/data:/data
-    stdin_open: true  # Mantiene abierta la entrada estándar (para escribir comandos)
-    tty: true  # Simula una terminal real dentro del contenedor (necesario para la CLI)
+      - shared_data:/data # Monta el volumen compartido en /data dentro del contenedor
+                          # node-web y filesystem-cli ven los mismos archivos
+    depends_on:
+      - mongodb # Le dice a Compose que inicie mongodb antes que node-web
+    networks:
+      - app-network # Conecta este contenedor a la red interna del proyecto
+    restart: unless-stopped # Reinicia el contenedor automáticamente si falla
+                             # Solo se detiene si el usuario lo para manualmente
+
+  filesystem-cli: # Servicio 2: CLI en Python que simula el sistema de archivos
+    build:
+      context: ./filesystem # Carpeta donde está el Dockerfile de Python
+      dockerfile: Dockerfile # Instrucciones para construir la imagen Python
+    container_name: filesystem-cli # Nombre fijo del contenedor
+    volumes:
+      - shared_data:/data # Mismo volumen que node-web — comparten el sistema de archivos
+                          # Lo que crees con "touch" en la CLI aparece en la web y viceversa
+    stdin_open: true # Mantiene abierta la entrada estándar (stdin)
+                     # Necesario para que el CLI pueda recibir comandos escritos por el usuario
+    tty: true # Simula una terminal real (TTY) dentro del contenedor
+              # Sin esto, el input interactivo del CLI no funciona correctamente
+    networks:
+      - app-network # Misma red que node-web para que puedan comunicarse
+    restart: unless-stopped # Reinicia si falla inesperadamente
+
+  mongodb: # Servicio 3: base de datos para registrar las operaciones del sistema de archivos
+    image: mongo:7 # Usa la imagen oficial de MongoDB versión 7 desde Docker Hub
+                   # No tiene Dockerfile propio — se usa la imagen tal cual
+    container_name: mongodb # Nombre fijo — también actúa como hostname en la red interna
+    ports:
+      - "27017:27017" # Expone el puerto estándar de MongoDB al host
+                      # Permite conectarse con herramientas externas como MongoDB Compass
+    volumes:
+      - mongo_data:/data/db # Persiste los datos de la base de datos en un volumen dedicado
+                            # Si el contenedor se apaga, los datos de MongoDB no se pierden
+    networks:
+      - app-network # Misma red interna — node-web lo alcanza por hostname "mongodb"
+    restart: unless-stopped # Reinicia automáticamente si el proceso de MongoDB falla
+
+volumes: # Declara los volúmenes nombrados que usan los servicios
+  shared_data: # Volumen compartido entre node-web y filesystem-cli
+               # Docker lo crea y gestiona automáticamente en el host
+               # Los archivos sobreviven aunque los contenedores se eliminen
+  mongo_data:  # Volumen exclusivo de MongoDB para persistir la base de datos
+
+networks: # Define la red interna que conecta los contenedores
+  app-network:
+    driver: bridge # Red tipo bridge — aísla los contenedores del resto del sistema
+                   # Dentro de esta red, los contenedores se ven por nombre de servicio
+                   # Fuera de esta red, solo son accesibles por los puertos expuestos
