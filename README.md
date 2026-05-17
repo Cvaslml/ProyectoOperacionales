@@ -24,21 +24,21 @@ Este proyecto demuestra el uso de **Docker y Docker Compose** para construir, de
 ┌─────────────────────────────────────────────────────────────────┐
 │                   Docker Compose Network                        │
 │                                                                 │
-│  ┌──────────────┐   ┌──────────────┐   ┌──────────────────┐     │
-│  │ Contenedor 1 │   │ Contenedor 2 │   │  Contenedor 3    │     │
-│  │  node-app    │──▶│filesystem-cli│   │    mongodb       │     │
-│  │ Node.js+Expr │   │  Python CLI  │   │  MongoDB 7       │     │
-│  │  Puerto 3000 │   │  ls,mkdir... │   │  Puerto 27017    │     │
-│  └──────┬───────┘   └──────┬───────┘   └────────┬─────────┘     │
-│         │__________________│                    │               |
-│                 │                               │               | 
-│   shared_data (volumen)            mongo_data◄──┘               |
+│  ┌───────────────┐   ┌───────────────┐   ┌──────────────────┐   │
+│  │ Contenedor 1  │   │ Contenedor 2  │   │  Contenedor 3    │   │
+│  │  node-app     │──▶│filesystem-cli │   │    mongodb       │   │
+│  │ Node.js+Expr  │   │  Python CLI   │   │  MongoDB 7       │   │
+│  │  Puerto 3000  │   │  ls,mkdir...  │   │  Puerto 27017    │   │
+│  │Dockerf propio │   │Dockerf propio │   │  Sin docerfyle   │   │
+│  └──────┬────────┘   └──────┬────────┘   └────────┬─────────┘   │
+│         │__________________│                      │             |
+│                 │                                 │             | 
+│   shared_data (volumen)            mongo_data  ◄──┘             |
 └─────────────────────────────────────────────────────────────────┘
 
          ▲
     Usuario → http://localhost:3000
 ```
-<img width="1440" height="1002" alt="image" src="https://github.com/user-attachments/assets/515775c1-7218-4fcf-a32f-ff8ec44bc7b5" />
 
 ---
 
