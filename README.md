@@ -22,19 +22,26 @@ Este proyecto demuestra el uso de **Docker y Docker Compose** para construir, de
 
 ## 🏗️ Arquitectura del sistema
 ```text
-┌─────────────────────────────────────────────────────────┐
-│              Docker Compose — app-network               │
-│                                                         │
-│  ┌─────────────┐   ┌─────────────┐  ┌──────────────┐    │
-│  │  node-web   │──▶│filesystem   │  │   mongodb    │    │
-│  │  Node.js    │   │  -cli       │  │  MongoDB 7   │    │
-│  │  :3000      │   │  Python CLI │  │  :27017      │    │
-│  └──────┬──────┘   └──────┬──────┘  └──────┬───────┘    │
-│         │                 │                 │           │
-│   shared_data (volumen)◄──┘         mongo_data          │
-└─────────────────────────────────────────────────────────┘
-▲
-Usuario → http://localhost:3000
+┌─────────────────────────────────────────────────────────────────┐
+│                   Docker Compose Network                        │
+│                                                                 │
+│  ┌──────────────┐   ┌──────────────┐   ┌──────────────────┐     │
+│  │ Contenedor 1 │   │ Contenedor 2 │   │  Contenedor 3    │     │
+│  │  node-app    │──▶│filesystem-cli│   │    mongodb       │     │
+│  │ Node.js+Expr │   │  Python CLI  │   │  MongoDB 7       │     │
+│  │  Puerto 3000 │   │  ls,mkdir... │   │  Puerto 27017    │     │
+│  └──────┬───────┘   └──────┬───────┘   └────────┬─────────┘     │
+│         │                  │                      │             │
+│         └──────────────────┼──────────────────────┘             │
+│                            ▼                                    │
+│                 ┌──────────────────────┐                        │
+│                 │   Volumen compartido │                        │
+│                 │    volumes/data/     │                        │
+│                 │   (persistencia)     │                        │
+│                 └──────────────────────┘                        │
+└─────────────────────────────────────────────────────────────────┘
+         ▲
+    Usuario → http://localhost:3000
 ```
 ---
 
