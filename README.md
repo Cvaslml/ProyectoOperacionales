@@ -16,7 +16,6 @@ Este proyecto demuestra el uso de **Docker y Docker Compose** para construir, de
 | Verificar funcionamiento de cada contenedor | `docker compose ps` + health checks |
 | Definir servicios en `docker-compose.yml` | Archivo único orquesta los 3 servicios |
 | Levantar, detener y escalar servicios | `up`, `stop`, `down`, `--scale` |
-| Gestionar variables de entorno y volúmenes | Archivo `.env` + volúmenes nombrados |
 
 ---
 
