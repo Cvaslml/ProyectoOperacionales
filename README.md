@@ -55,7 +55,7 @@ ProyectoOperacionales/
 │   ├── Dockerfile
 │   └── main.py
 │
-├── volumes/
+├── volumes/               # Contenedor 3 — mongo-db
 │   └── data/              # Sistema de archivos simulado (volumen compartido)
 │
 ├── docker-compose.yml     # Orquestación de los 3 servicios
