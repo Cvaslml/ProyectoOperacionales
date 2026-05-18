@@ -59,7 +59,7 @@ ProyectoOperacionales/
 │   └── data/              # Sistema de archivos simulado (volumen compartido)
 │
 ├── docker-compose.yml     # (Contenedor 3 — mongo-db) Orquestación de los 3 servicios
-├── .env                   # Variables de entorno
+|                          # Variables de entorno fijas
 ├── .gitignore
 └── README.md
 
