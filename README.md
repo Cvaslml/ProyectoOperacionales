@@ -139,9 +139,6 @@ docker compose down
 # Detener y eliminar contenedores + volúmenes
 docker compose down -v
 
-# Escalar el servicio CLI a 3 instancias
-docker compose up --scale filesystem-cli=3 -d
-
 # Reiniciar un servicio específico
 docker compose restart node-web
 
