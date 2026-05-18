@@ -146,21 +146,6 @@ docker compose restart node-web
 docker exec -it node-web bash
 docker exec -it filesystem-cli bash
 ```
-
----
-
-## Gestión de variables de entorno
-
-Archivo `.env` en la raíz del proyecto:
-
-```env
-MONGO_URI=mongodb://mongodb:27017/filesystemdb
-NODE_ENV=production
-PORT=3000
-```
-
-Docker Compose los inyecta automáticamente en cada servicio que los declara con `env_file: .env`.
-
 ---
 
 ## Gestión de volúmenes
