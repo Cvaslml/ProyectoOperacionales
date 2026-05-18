@@ -64,6 +64,14 @@ ProyectoOperacionales/
 └── README.md
 
 ```
+### Gestión de variables de entorno
+
+Las variables de entorno críticas para la configuración del sistema se encuentran definidas directamente en el archivo `docker-compose.yml` bajo la sección `environment` del servicio `node-web`:
+
+- `PORT`: Define el puerto en el que escucha el servidor Express (3000).
+- `MONGO_URI`: Establece la ruta de conexión hacia el contenedor de la base de datos (`mongodb://mongodb:27017/filesystemdb`).
+
+Esto permite que el entorno sea completamente portable y autoejecutable sin depender de archivos `.env` externos.
 
 ---
 
